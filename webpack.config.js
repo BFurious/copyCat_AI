@@ -15,6 +15,7 @@ const transformCss = (content, file) => {
 module.exports = {
   context: path.resolve(__dirname),
   entry: {
+    script: "./src/UI/script.ts",
     background: "./src/background/host.ts",
     popup: "./src/popup.ts",
     content: "./src/content/contentScript.ts",

@@ -43,7 +43,7 @@ function captureUserActions(tabId: number) {
   document.addEventListener("input", (e) => {
     const target = e.target as HTMLElement;
     if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-      sendAction("input", { selector: getXPath(target), value: target.value });
+      sendAction("input", { selector: getXPath(target), inputValue: target.value });
     }
   });
 
@@ -51,21 +51,35 @@ function captureUserActions(tabId: number) {
     sendAction("navigation", { url: window.location.href });
   });
 
+  document.addEventListener("focus", (e) => {
+    const target = e.target as HTMLElement;
+    sendAction("focus", { selector: getXPath(target) });
+  }, true);
 
-  // document.addEventListener("scroll", () => {
-  //   sendRpcMessage({
-  //     type: "userAction",
-  //     action: { actionType: "scroll", value: { x: window.scrollX, y: window.scrollY } },
-  //   });
-  // });
+  document.addEventListener("blur", (e) => {
+    const target = e.target as HTMLElement;
+    sendAction("blur", { selector: getXPath(target) });
+  }, true);
 
-  // document.addEventListener("mouseover", (e) => {
-  //   const target = e.target as HTMLElement;
-  //   sendRpcMessage({
-  //     type: "userAction",
-  //     action: { actionType: "hover", selector: getXPath(target) },
-  //   });
-  // });
+  document.addEventListener("scroll", () => {
+    sendAction("scroll", { coordinates: { x: window.scrollX, y: window.scrollY } });
+  });
+
+  document.addEventListener("mouseover", (e) => {
+    const target = e.target as HTMLElement;
+    sendAction("hover", { selector: getXPath(target) });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    sendAction("keydown", { key: e.key, code: e.code });
+  });
+
+  document.addEventListener("change", (e) => {
+    const target = e.target as HTMLElement;
+    if (target instanceof HTMLSelectElement) {
+      sendAction("select", { selector: getXPath(target), value: target.value });
+    }
+  });
 }
 
 // Initialize the script

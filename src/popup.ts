@@ -8,6 +8,7 @@ const port = browser.runtime.connect({ name: "rpcPort" });
 const KEEP_ALIVE_INTERVAL = 5000; // 5 seconds
 let keepAliveInterval: number | undefined;
 
+// keeping "rpcPort" alive
 function startKeepAlive() {
   if (!keepAliveInterval) {
     keepAliveInterval = window.setInterval(() => {
@@ -21,30 +22,30 @@ export function sendRpcMessage(message: RpcMessages): void {
 }
 
 // Add event listeners for popup buttons
-export const startRecordingButton = document.getElementById("start-recording")as HTMLButtonElement;
-export const stopRecordingButton = document.getElementById("stop-recording")as HTMLButtonElement;
-export const replayRecordingButton = document.getElementById("replay-recording") as HTMLButtonElement;
-export const clearRecordingButton = document.getElementById("clear-recording")as HTMLButtonElement;
+const startRecordingButton = document.getElementById("start-recording")as HTMLButtonElement;
+const stopRecordingButton = document.getElementById("stop-recording")as HTMLButtonElement;
+const replayRecordingButton = document.getElementById("replay-recording") as HTMLButtonElement;
+const clearRecordingButton = document.getElementById("clear-recording")as HTMLButtonElement;
 
 if (startRecordingButton) {
   startRecordingButton.onclick = () => {
-    alterWhenRecordingStarted();
+    alterWhenRecordingStarted(startRecordingButton, replayRecordingButton, stopRecordingButton);
     sendRpcMessage({ type: "startRecording" });
   };
 }
 
 if (stopRecordingButton) {
   stopRecordingButton.onclick = () => {
-    alterWhenRecordingStarted();
+    alterWhenRecordingStarted(startRecordingButton, replayRecordingButton, stopRecordingButton);
     sendRpcMessage({ type: "stopRecording" });
   };
 }
 
 if (replayRecordingButton) {
   replayRecordingButton.onclick = () => {
-    alterWhenReplayStarted();
+    alterWhenReplayStarted(startRecordingButton, replayRecordingButton);
     sendRpcMessage({ type: "replayRecording" });
-    alterWhenReplayStarted();
+    alterWhenReplayStarted(startRecordingButton, replayRecordingButton);
   };
 }
 

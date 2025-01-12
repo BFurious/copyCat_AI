@@ -64,20 +64,5 @@
   </div>
   <script src="js/popup.js" type="module"></script>
 </body>
-<script>
-  const textElement = document.querySelector('.text');
-  const tooltip = document.createElement('div');
-  tooltip.className = 'tooltip';
-  tooltip.textContent = textElement.textContent;
-  document.querySelector('.container').appendChild(tooltip);
-
-  textElement.addEventListener('mouseover', () => {
-    tooltip.style.display = 'block';
-  });
-
-  textElement.addEventListener('mouseout', () => {
-    tooltip.style.display = 'none';
-  });
-</script>
-
+<script type="text/javascript" src="js/script.js"></script>
 </html>

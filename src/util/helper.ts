@@ -35,7 +35,7 @@ export function replayRecording(message: UserAction) {
     const userActionWithXPath = ["click", "hover", "input", "select"]
     try {
         let element;
-        
+
         // Handle tab navigation actions
         if (actionType === "tabSwitch" || actionType === "navigation") {
             if (tabId) {
@@ -89,12 +89,8 @@ export function replayRecording(message: UserAction) {
 
             case "scroll":
                 const { x = 0, y = 0 } = coordinates || {};
-                if (element instanceof HTMLElement) {
-                    element.scrollTo({ top: y, left: x, behavior: "smooth" });
-                    console.log(`Scrolled to (${x}, ${y}) within element at ${selector}`);
-                } else {
-                    console.error(`Element at ${selector} is not scrollable.`);
-                }
+                window.scrollTo({ top: y, left: x, behavior: "smooth" });
+                console.log(`Scrolled to (${x}, ${y})`);
                 break;
 
             case "hover":
@@ -102,6 +98,31 @@ export function replayRecording(message: UserAction) {
                     new MouseEvent("mouseover", { bubbles: true })
                 );
                 console.log(`Hovered over element at ${selector}`);
+                break;
+
+            case "focus":
+                (element as HTMLElement).focus();
+                console.log(`Focused on element at ${selector}`);
+                break;
+
+            case "blur":
+                (element as HTMLElement).blur();
+                console.log(`Blurred element at ${selector}`);
+                break;
+
+            case "keydown":
+                const key = inputValue || "";
+                const event = new KeyboardEvent("keydown", { key, code: key });
+                document.dispatchEvent(event);
+                console.log(`Keydown event triggered: ${key}`);
+                break;
+
+            case "select":
+                if (element instanceof HTMLSelectElement) {
+                    element.value = inputValue || "";
+                    element.dispatchEvent(new Event("change", { bubbles: true }));
+                    console.log(`Selected value "${inputValue}" at ${selector}`);
+                }
                 break;
 
             default:

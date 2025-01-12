@@ -1,7 +1,7 @@
 
 import { Runtime } from "webextension-polyfill";
 
-export type RpcMessages =
+export type RpcMessages = 
     | { type: "startRecording" }
     | { type: "stopRecording" }
     | { type: "replayRecording" }
@@ -24,11 +24,13 @@ export type UserAction = {
             x?: number,
             y?: number
         },
+        key?: string,
+        code?: number,
         url?: string
     }
 };
 
-export type UserActionType = "click" | "scroll" | "hover" | "navigate" | "input" | "select" | "tabSwitch" | "navigation";
+export type UserActionType = "click" | "scroll" | "hover" | "navigate" | "input" | "select" | "tabSwitch" | "navigation" | "focus" | "blur" | "keydown";
 
 export interface Project {
     name: string;

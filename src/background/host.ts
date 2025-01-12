@@ -37,7 +37,7 @@ browser.runtime.onConnect.addListener((port: Runtime.Port) => {
     const tabId = tabs[0]?.id;
     if (tabId) {
       contentScriptPorts.set(tabId, port);
-      browser.tabs.sendMessage(tabId, {action: "startKeepAlive"});
+      browser.tabs.sendMessage(tabId, { action: "startKeepAlive" });
     }
   });
 
@@ -116,22 +116,18 @@ export function sendRpcMessageResponse(message: RpcMessages, port: Runtime.Port)
 }
 
 // Send a message to all connected content scripts
-async function broadcastToContentScripts(message: RpcMessages) {
-  contentScriptPorts.forEach(async (port, tabId) => {
-    try {
-      await browser.tabs.sendMessage(tabId, message)
-
-    } catch (error) {
-      console.error(`Failed to send message to tab ${tabId}:`, error);
-      contentScriptPorts.delete(tabId); // Remove disconnected port
-    }
-  });
+async function broadcastMessageToContentScripts(message: { type: "replayUserAction"; actionDetails: UserAction }) {
+  try {
+    await browser.tabs.sendMessage(message.actionDetails.tabId, message);
+  } catch (error) {
+    console.error(`Failed to send message to tab ${message.actionDetails.tabId}:`, error);
+    contentScriptPorts.delete(message.actionDetails.tabId); // Remove disconnected port
+  }
 }
-
 
 // Define RPC handlers
 addRpcListener((message, port) => {
-  const {isRecording, isReplaying} = getStates();
+  const { isRecording, isReplaying } = getStates();
   switch (message.type) {
     case "startRecording":
       recordedActions.length = 0; // Clear previous actions
@@ -148,16 +144,16 @@ addRpcListener((message, port) => {
       console.log("Replaying actions", recordedActions);
       updateState(ActionStates.REPLAY, true);
       recordedActions.forEach((actionDetails) => {
-        broadcastToContentScripts({ type: "replayUserAction", actionDetails });
+        broadcastMessageToContentScripts({ type: "replayUserAction", actionDetails });
       });
       updateState(ActionStates.REPLAY, false);
       break;
 
     case "userAction":
-      if(!isRecording){
+      if (!isRecording) {
         return;
       }
-      recordedActions.push(message.actionDetails);
+      recordedActions.push(message.actionDetails!);
       break;
   }
 });
