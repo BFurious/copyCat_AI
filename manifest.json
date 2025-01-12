@@ -1,0 +1,25 @@
+{
+   "manifest_version": 3,
+   "name": "copyCat_Ai",
+   "version": "1",
+   "description": "Extension for automating browser",
+   "background": {
+     "service_worker": "js/background.js"
+   },
+   "action": {
+     
+   },
+   "content_scripts": [
+     {
+       "matches": ["https://*/*", "http://*/*"],
+       "js": ["js/browser-polyfill.min.js", "js/content.js"],
+       "run_at": "document_end"
+     }
+   ],
+   "host_permissions": ["http://*/*", "https://*/*"],
+   "permissions": ["cookies", "tabs", "storage", "scripting", "activeTab"],
+   "content_security_policy": {
+     "extension_pages": "script-src 'self'; object-src 'self'"
+   }
+ }
+ 

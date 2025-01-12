@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recording Interface</title>
+  <link rel="stylesheet" href="./css/popup.css">
+  <!-- <link rel="stylesheet" href="css/templates.css"> -->
+  <!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> -->
+
+</head>
+<body>
+  <div class="recordings">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>tabId</th>
+          <th>ActionType</th>
+          <th>xPath</th>
+        </tr>
+      </thead>
+      <tbody id="recording-list"></tbody>
+    </table>
+  </div>
+  <div class="actions">
+    <button class="green-button" style="display: block;" id="start-recording">Start Recording</button>
+    <button class="red-button" style="display: none;" id="stop-recording">Stop Recording</button>
+    <button class="blue-button" style="display: block;" id="replay-recording">Replay Recording</button>
+    <button class="teal-button" style="display: block;" id="clear-recordings">Clear Recordings</button>
+  </div>
+  <script src="js/popup.js" type="module"></script>
+</body>
+</html>
