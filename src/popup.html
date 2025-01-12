@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,15 +10,47 @@
   <!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> -->
 
 </head>
+<style>
+  .tooltip {
+    display: none;
+    /* Hide tooltip by default */
+    position: absolute;
+    top: 100%;
+    /* Position below the text */
+    left: 0;
+    background-color: white;
+    /* Optional: Add background for better visibility */
+    border: 1px solid #ccc;
+    /* Optional: Add border */
+    padding: 5px;
+    /* Optional: Add padding */
+    z-index: 1000;
+    /* Ensure it appears above other content */
+  }
+</style>
+
 <body>
   <div class="recordings">
     <table>
       <thead>
         <tr>
-          <th>Title</th>
-          <th>tabId</th>
-          <th>ActionType</th>
-          <th>xPath</th>
+          <th>
+            <div class="text">Title</div>
+          </th>
+          <th>
+            <div class="text">tabId</div>
+          </th>
+
+          <th>
+            <div class="text">
+              ActionType
+            </div>
+          </th>
+          <th>
+            <div class="text">
+              xPath
+            </div>
+          </th>
         </tr>
       </thead>
       <tbody id="recording-list"></tbody>
@@ -31,4 +64,20 @@
   </div>
   <script src="js/popup.js" type="module"></script>
 </body>
+<script>
+  const textElement = document.querySelector('.text');
+  const tooltip = document.createElement('div');
+  tooltip.className = 'tooltip';
+  tooltip.textContent = textElement.textContent;
+  document.querySelector('.container').appendChild(tooltip);
+
+  textElement.addEventListener('mouseover', () => {
+    tooltip.style.display = 'block';
+  });
+
+  textElement.addEventListener('mouseout', () => {
+    tooltip.style.display = 'none';
+  });
+</script>
+
 </html>

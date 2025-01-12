@@ -1,0 +1,121 @@
+# Chrome Extension: CopyCat_AI
+
+Welcome to the **CopyCat_AI** Chrome extension project! This extension helps you record and replay user actions (like clicks, typing, and scrolling) on any webpage. It's like a magic wand for automating tasks in your browser!
+
+---
+
+## 🌟 **What Does It Do?**
+
+1. **Record Actions**:
+   - Click the "Start Recording" button to record your actions on a webpage (e.g., clicking buttons, typing text, scrolling).
+
+2. **Save Recordings**:
+   - Save your recordings with a name so you can replay them later.
+
+3. **Replay Actions**:
+   - Replay your saved recordings to repeat the same actions automatically.
+
+4. **Highlight Elements**:
+   - When replaying, the extension highlights the elements being interacted with (like buttons or input fields).
+
+---
+
+## 🛠️ **How to Use**
+
+### Step 1: Install the Extension
+1. Download the project files. and create a ./dist folder with command "npm run build" in terminal.
+2. Open Chrome and go to `chrome://extensions/`.
+3. Enable **Developer Mode** (toggle in the top-right corner).
+4. Click **Load Unpacked** and select the ./dist folder.
+5. All Set, now u can use the extension from extension menu.
+
+### Step 2: Start Recording
+1. Click the extension icon in the Chrome toolbar.
+2. A new window will open with Controls, Click **Start Recording** to start recording. (Note: currently it only work for 1 tab and redirection  is also not recording for now)
+3. Perform actions on the webpage (e.g., click elements, type text).
+
+### Step 3: Save and Replay
+1. Click **Stop Recording** when you're done.
+2. Give your recording a name and click **Save**.
+3. To replay, select the recording from the list and click **Replay**.
+
+---
+
+## 🧩 **How It Works**
+
+- **Popup**: The small window that opens when you click the extension icon. It has buttons to start, stop, and replay recordings.
+- **Background Script**: Keeps the extension running in the background and manages connections. (Entry point: host.ts)
+- **Content Script**: Records and replays actions on the webpage. This is unique for every tab on browser. (EntryPoint: contentScript.ts)
+- **Note**: For better clarification please read comments to understand the work flow.
+
+---
+
+## 🚀 **Features**
+
+- Record clicks, typing, and scrolling.
+- Save and replay recordings.
+- Highlight elements during replay.
+- Simple and easy to use!
+
+---
+
+## 📂 **Project Structure**
+
+```
+copyCat_AI/
+├── public
+|   ├── css             #save css/styling files
+|   ├── icons           # save icon images for extension
+├── src
+    ├── background
+    |   ├── host.ts       # Manages connections and keeps the extension running
+    |   ├── store.ts       # Manages Storing of user actions with different required attributes
+    |
+    ├── content                         # Records and replays actions on the webpage
+    |   ├── contentScript.ts             # maintain logic to track tab actions like user actions on tab
+    |   ├── keepAlive.ts                # Logic to keep content script Alive and dont disconnect while any action 
+    |                                      reaplying, recording etc.) is going on
+    ├──shared                           
+    |   ├── enum.ts             # maintain the enums or constant values of keys
+    |   ├── types.ts            # maintain the type of variables (Typescript special)
+    |
+    ├──UI                               # Maintain the UI Interaction and alteration
+    |  ├── alterMainControls.ts         # maintain the html of main Control window   
+    |
+    ├──util
+    |  ├── helper.ts        # include helper functions (just internal functions which can be used for small activities)     
+    |  |                    # like getxPath()
+    |  ├── states.ts        # Manage the state of actions like isRcording = on/off etc.
+    |
+    ├── popup.ts            # Handles the popup UI (buttons and controls)
+    ├── popup.html          # The popup's layout
+    ├── manifest.json       # Tells Chrome about the extension
+    ├── README.md           # This file!
+    ├── tsconfig.json           # This file used to configure the typescript compiler
+    ├── webpack.config.ts       # this file is used to configure the webpacking mechanism
+```
+
+---
+
+## 🤝 **Contribute**
+
+Want to make this extension even better? Here's how you can help:
+1. **Report Bugs**: Found a problem? Let us know by opening an issue.
+2. **Suggest Features**: Have an idea? Share it with us!
+3. **Code Contributions**: Fork the project, make changes, and submit a pull request.
+
+---
+
+## 📜 **License**
+
+This project is open-source and free to use. Feel free to modify and share it!
+
+---
+
+## ❓ **Need Help?**
+
+If you have any questions or need help, feel free to reach out. Happy automating! 🎉
+
+---
+
+Made with ❤️ by Ashutosh Thakur. Enjoy! 🚀

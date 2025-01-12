@@ -22,6 +22,9 @@ body {
   th, td {
     padding: 12px 15px;
     text-align: left;
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis for overflow */
   }
 
   th {
