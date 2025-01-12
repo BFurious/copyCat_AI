@@ -14,6 +14,7 @@ const transformCss = (content, file) => {
 
 module.exports = {
   context: path.resolve(__dirname),
+  mode : "production",
   entry: {
     script: "./src/UI/script.ts",
     background: "./src/background/host.ts",

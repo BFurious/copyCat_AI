@@ -29,109 +29,119 @@ function highlightElement(element: HTMLElement): void {
     }, 1000); // Highlight for 1 second
 }
 
-export function replayRecording(message: UserAction) {
+export async function replayRecording(message: UserAction) {
     const { tabId } = message;
     const { actionType, selector, inputValue, coordinates, url } = message.action;
-    const userActionWithXPath = ["click", "hover", "input", "select"]
+
     try {
-        let element;
-
-        // Handle tab navigation actions
-        if (actionType === "tabSwitch" || actionType === "navigation") {
-            if (tabId) {
-                // Switch to the specified tab
-                browser.tabs.update(tabId, { active: true })
-                    .then(() => {
-                        console.log(`Switched to tab ${tabId}`);
-                    })
-                    .catch((error) => {
-                        console.error(`Error switching to tab ${tabId}:`, error);
-                    });
-
-                // If there is a navigation URL, navigate to that URL
-                if (url) {
-                    browser.tabs.update(tabId, { url })
-                        .then(() => {
-                            console.log(`Navigated to URL: ${url} in tab ${tabId}`);
-                        })
-                        .catch((error) => {
-                            console.error(`Error navigating to URL ${url} in tab ${tabId}:`, error);
-                        });
-                }
-            } else {
-                console.error(`Tab ID missing for tabSwitch or navigation action`);
-            }
-        } else if (selector) {
-            element = getElementByXPath(selector);
-            console.log(element);
-            if (!element) {
-                console.error(`Element not found for XPath: ${selector}`);
-                return;
-            }
-            highlightElement(element as HTMLElement);
+      let element;
+  
+      // Helper function to create a delay
+      const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  
+      // Handle tab navigation actions
+      if (actionType === "tabSwitch" || actionType === "navigation") {
+        if (tabId) {
+          // Switch to the specified tab
+          await browser.tabs
+            .update(tabId, { active: true })
+            .then(() => {
+              console.log(`Switched to tab ${tabId}`);
+            })
+            .catch((error) => {
+              console.error(`Error switching to tab ${tabId}:`, error);
+            });
+  
+          // If there is a navigation URL, navigate to that URL
+          if (url) {
+            await browser.tabs
+              .update(tabId, { url })
+              .then(() => {
+                console.log(`Navigated to URL: ${url} in tab ${tabId}`);
+              })
+              .catch((error) => {
+                console.error(`Error navigating to URL ${url} in tab ${tabId}:`, error);
+              });
+          }
+        } else {
+          console.error(`Tab ID missing for tabSwitch or navigation action`);
         }
-
-        switch (actionType) {
-            case "click":
-                (element as HTMLElement).click();
-                console.log(`Clicked element at ${selector}`);
-                break;
-
-            case "input":
-                if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-                    element!.value = inputValue || "";
-                    element.dispatchEvent(new Event("input", { bubbles: true }));
-                    console.log(`Input set to "${inputValue}" at ${selector}`);
-                } else {
-                    console.error(`Element at ${selector} is not an input field.`);
-                }
-                break;
-
-            case "scroll":
-                const { x = 0, y = 0 } = coordinates || {};
-                window.scrollTo({ top: y, left: x, behavior: "smooth" });
-                console.log(`Scrolled to (${x}, ${y})`);
-                break;
-
-            case "hover":
-                (element as HTMLElement).dispatchEvent(
-                    new MouseEvent("mouseover", { bubbles: true })
-                );
-                console.log(`Hovered over element at ${selector}`);
-                break;
-
-            case "focus":
-                (element as HTMLElement).focus();
-                console.log(`Focused on element at ${selector}`);
-                break;
-
-            case "blur":
-                (element as HTMLElement).blur();
-                console.log(`Blurred element at ${selector}`);
-                break;
-
-            case "keydown":
-                const key = inputValue || "";
-                const event = new KeyboardEvent("keydown", { key, code: key });
-                document.dispatchEvent(event);
-                console.log(`Keydown event triggered: ${key}`);
-                break;
-
-            case "select":
-                if (element instanceof HTMLSelectElement) {
-                    element.value = inputValue || "";
-                    element.dispatchEvent(new Event("change", { bubbles: true }));
-                    console.log(`Selected value "${inputValue}" at ${selector}`);
-                }
-                break;
-
-            default:
-                console.error(`Unsupported action type: ${actionType}`);
+      } else if (selector) {
+        element = getElementByXPath(selector);
+        console.log(element);
+        if (!element) {
+          console.error(`Element not found for XPath: ${selector}`);
+          return;
         }
+        highlightElement(element as HTMLElement);
+      }
+  
+      // Add a delay before executing the action
+      await delay(1000);
+  
+      // Execute action based on type
+      switch (actionType) {
+        case "click":
+          (element as HTMLElement).click();
+          console.log(`Clicked element at ${selector}`);
+          break;
+  
+        case "input":
+          if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+            element.value = inputValue || "";
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+            console.log(`Input set to "${inputValue}" at ${selector}`);
+          } else {
+            console.error(`Element at ${selector} is not an input field.`);
+          }
+          break;
+  
+        case "scroll":
+          const { x = 0, y = 0 } = coordinates || {};
+          window.scrollTo({ top: y, left: x, behavior: "smooth" });
+          console.log(`Scrolled to (${x}, ${y})`);
+          break;
+  
+        case "hover":
+          (element as HTMLElement).dispatchEvent(
+            new MouseEvent("mouseover", { bubbles: true })
+          );
+          console.log(`Hovered over element at ${selector}`);
+          break;
+  
+        case "focus":
+          (element as HTMLElement).focus();
+          console.log(`Focused on element at ${selector}`);
+          break;
+  
+        case "blur":
+          (element as HTMLElement).blur();
+          console.log(`Blurred element at ${selector}`);
+          break;
+  
+        case "keydown":
+          const key = inputValue || "";
+          const event = new KeyboardEvent("keydown", { key, code: key });
+          document.dispatchEvent(event);
+          console.log(`Keydown event triggered: ${key}`);
+          break;
+  
+        case "select":
+          if (element instanceof HTMLSelectElement) {
+            element.value = inputValue || "";
+            element.dispatchEvent(new Event("change", { bubbles: true }));
+            console.log(`Selected value "${inputValue}" at ${selector}`);
+          }
+          break;
+  
+        default:
+          console.error(`Unsupported action type: ${actionType}`);
+      }
     } catch (error) {
-        console.error(`Error replaying action:`, error);
+      console.error(`Error replaying action:`, error);
     }
-}
+  }
+  
 
 
 // Utility to get a unique selector for an element

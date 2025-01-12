@@ -12,6 +12,16 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     margin-bottom: 20px;
+    max-width: 450px; /* Set max width for the table */
+    max-height: 450px; /* Set max height for the table */
+    overflow: auto; /* Enable scrolling */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+  }
+
+  /* Hide scrollbar for Chrome, Safari, and Opera */
+.recordings::-webkit-scrollbar {
+    display: none;
   }
 
   table {

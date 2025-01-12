@@ -5,7 +5,7 @@ export type RpcMessages =
     | { type: "startRecording" }
     | { type: "stopRecording" }
     | { type: "replayRecording" }
-    | { type: "loadProjects" }
+    | { type: "loadProjects", data: any }
     | { type: "saveProject"; name: string }
     | { type: "renameProject"; oldName: string; newName: string }
     | { type: "deleteProject"; name: string }

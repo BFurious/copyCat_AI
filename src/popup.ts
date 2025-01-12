@@ -1,12 +1,20 @@
 import browser from "webextension-polyfill";
 import { RpcMessages } from "./shared/types";
-import { alterWhenRecordingStarted, alterWhenReplayStarted } from "./UI/alterMainControls";
+import { populateRecordingList, alterWhenRecordingStarted, alterWhenReplayStarted } from "./UI/alterMainControls";
 
 
 //creaitng a port to connect to the background script
 const port = browser.runtime.connect({ name: "rpcPort" });
 const KEEP_ALIVE_INTERVAL = 5000; // 5 seconds
 let keepAliveInterval: number | undefined;
+
+port.onMessage.addListener((msg: unknown) => {
+  const message = msg as RpcMessages;
+  if (message.type === "loadProjects") {
+    console.log("Projects loaded:", message.data);
+    populateRecordingList(message.data);
+  }
+});
 
 // keeping "rpcPort" alive
 function startKeepAlive() {
@@ -22,10 +30,10 @@ export function sendRpcMessage(message: RpcMessages): void {
 }
 
 // Add event listeners for popup buttons
-const startRecordingButton = document.getElementById("start-recording")as HTMLButtonElement;
-const stopRecordingButton = document.getElementById("stop-recording")as HTMLButtonElement;
+const startRecordingButton = document.getElementById("start-recording") as HTMLButtonElement;
+const stopRecordingButton = document.getElementById("stop-recording") as HTMLButtonElement;
 const replayRecordingButton = document.getElementById("replay-recording") as HTMLButtonElement;
-const clearRecordingButton = document.getElementById("clear-recording")as HTMLButtonElement;
+const clearRecordingButton = document.getElementById("clear-recording") as HTMLButtonElement;
 
 if (startRecordingButton) {
   startRecordingButton.onclick = () => {

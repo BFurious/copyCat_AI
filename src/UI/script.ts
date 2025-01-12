@@ -1,15 +1,21 @@
-const textElement = document.querySelector('.text');
-const tooltip = document.createElement('div');
-tooltip.className = 'tooltip';
-tooltip.textContent = textElement!.textContent;
-document.querySelector('.container')?.appendChild(tooltip);
-
-if(textElement){
-textElement.addEventListener('mouseover', () => {
-    tooltip.style.display = 'block';
-});
-
-textElement.addEventListener('mouseout', () => {
-    tooltip.style.display = 'none';
-});
-}
+document.addEventListener("DOMContentLoaded", function () {
+    const cells = document.querySelectorAll("td");
+  
+    cells.forEach((cell) => {
+      // Create a tooltip element
+      const tooltip = document.createElement("div");
+      tooltip.className = "tooltip";
+      tooltip.textContent = cell.textContent;
+      cell.appendChild(tooltip);
+  
+      // Show tooltip on hover
+      cell.addEventListener("mouseenter", () => {
+        tooltip.style.display = "block";
+      });
+  
+      // Hide tooltip when not hovering
+      cell.addEventListener("mouseleave", () => {
+        tooltip.style.display = "none";
+      });
+    });
+  });

@@ -9,6 +9,23 @@ import { ActionStates } from "../shared/enum";
 
 const listeners: RpcHandler[] = [];
 const recordedActions: UserAction[] = [];
+
+// Load projects from storage
+// Using .then for promise handling
+let DbData: { [key: string]: UserAction[] } | {};
+
+loadProjects()
+  .then((data) => {
+    DbData = data;
+    console.log("Loaded Projects:", DbData);
+  })
+  .catch((error) => {
+    console.error("Failed to load projects:", error);
+  });
+
+
+let rpcPort: Runtime.Port;
+
 // Map to track content script ports per tab
 const contentScriptPorts: Map<number, Runtime.Port> = new Map();
 
@@ -20,6 +37,8 @@ browser.runtime.onConnect.addListener((port: Runtime.Port) => {
 
   if (port.name === "rpcPort") {
     // Handle popup or other UI scripts
+    rpcPort = port;
+    sendRpcMessageResponse({ type: "loadProjects", data : DbData }, rpcPort);
     port.onMessage.addListener((msg: unknown) => {
       for (const listener of listeners) {
         listener(msg as RpcMessages, port);
@@ -27,7 +46,7 @@ browser.runtime.onConnect.addListener((port: Runtime.Port) => {
     });
     port.onDisconnect.addListener(() => {
       console.log("Port disconnected:", port.name);
-
+      resetStates();
     });
   } else {
     throw new Error("Unknown port.");
@@ -78,16 +97,20 @@ browser.action.onClicked.addListener(() => {
 
 // Track tab switches or updates (e.g., redirection)
 browser.tabs.onActivated.addListener(async (activeInfo) => {
-  const tab = await browser.tabs.get(activeInfo.tabId);
-  recordedActions.push({
-    tabId: activeInfo.tabId,
-    timestamp: Date.now(),
-    action: { actionType: "tabSwitch", url: tab.url },
-  });
+  const { isRecording } = getStates();
+  if (isRecording) {
+    const tab = await browser.tabs.get(activeInfo.tabId);
+    recordedActions.push({
+      tabId: activeInfo.tabId,
+      timestamp: Date.now(),
+      action: { actionType: "tabSwitch", url: tab.url },
+    });
+  }
 });
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.url) {
+  const { isRecording } = getStates();
+  if (changeInfo.url && isRecording) {
     recordedActions.push({
       tabId,
       timestamp: Date.now(),
@@ -126,7 +149,7 @@ async function broadcastMessageToContentScripts(message: { type: "replayUserActi
 }
 
 // Define RPC handlers
-addRpcListener((message, port) => {
+addRpcListener(async (message, port) => {
   const { isRecording, isReplaying } = getStates();
   switch (message.type) {
     case "startRecording":
@@ -138,6 +161,8 @@ addRpcListener((message, port) => {
     case "stopRecording":
       updateState(ActionStates.RECORD, false);
       console.log("Recording stopped", recordedActions);
+      DbData = await saveProject("Test Project", recordedActions, DbData);
+      sendRpcMessageResponse({ type: "loadProjects", data : DbData }, rpcPort);
       break;
 
     case "replayRecording":
