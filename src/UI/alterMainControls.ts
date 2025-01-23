@@ -29,36 +29,57 @@ export function populateRecordingList(recordedActions: { [key: string]: UserActi
 
     // Loop through each project in the recorded actions
     Object.entries(recordedActions).forEach(([projectName, actions]) => {
+        // Create a table row for the project name
+        const projectRow = document.createElement("tr");
+        const projectCell = document.createElement("td");
+        projectCell.colSpan = 4; // Span across all columns
+        projectCell.textContent = projectName;
+        projectCell.style.cursor = "pointer";
+        projectRow.appendChild(projectCell);
+        recordingList.appendChild(projectRow);
+
+        // Create a container for the actions
+        const actionsContainer = document.createElement("tbody");
+        actionsContainer.style.display = "none"; // Hide initially
+
         actions.forEach((action) => {
             const { tabId, timestamp, action: actionDetails } = action;
             const { actionType, selector } = actionDetails;
 
-            // Create a table row
-            const row = document.createElement("tr");
+            // Create a table row for each action
+            const actionRow = document.createElement("tr");
 
             // Add Title (timestamp in readable format)
             const titleCell = document.createElement("td");
             const readableTimestamp = new Date(timestamp).toLocaleString();
             titleCell.textContent = readableTimestamp;
-            row.appendChild(titleCell);
+            actionRow.appendChild(titleCell);
 
             // Add Tab ID
             const tabIdCell = document.createElement("td");
             tabIdCell.textContent = tabId.toString();
-            row.appendChild(tabIdCell);
+            actionRow.appendChild(tabIdCell);
 
             // Add Action Type
             const actionTypeCell = document.createElement("td");
             actionTypeCell.textContent = actionType;
-            row.appendChild(actionTypeCell);
+            actionRow.appendChild(actionTypeCell);
 
             // Add XPath
             const xPathCell = document.createElement("td");
             xPathCell.textContent = selector || "N/A";
-            row.appendChild(xPathCell);
+            actionRow.appendChild(xPathCell);
 
-            // Append the row to the table body
-            recordingList.appendChild(row);
+            // Append the action row to the actions container
+            actionsContainer.appendChild(actionRow);
+        });
+
+        // Append the actions container to the table body
+        recordingList.appendChild(actionsContainer);
+
+        // Add click event to toggle the visibility of the actions
+        projectCell.addEventListener("click", () => {
+            actionsContainer.style.display = actionsContainer.style.display === "none" ? "table-row-group" : "none";
         });
     });
 }
